@@ -18,14 +18,16 @@ node['janus']['required_packages'].each do |pkg|
   package pkg
 end
 
+user_id = node['janus']['user']
+
+ENV['HOME'] = "/home/#{user_id}" unless user_id == 'root'
+
 # Execute the Janus bootstrap installation from github.
 execute "curl -Lo- http://bit.ly/janus-bootstrap | bash" do
   cwd   node['janus']['dir']
   user  node['janus']['user']
-  not_if {File.exists?("/home/#{node['janus']['user']}/.vim/bootstrap.sh")}
+  not_if {File.exists?("#{ENV['HOME']}/.vim/bootstrap.sh")}
 end
-
-user_id = node['janus']['user']
 
 template "/home/#{user_id}/.vimrc.after" do
   source "vimrc.after"

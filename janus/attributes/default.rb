@@ -21,5 +21,5 @@ default['janus']['required_packages'] = %w{ curl vim vim-nox rake
 
 # Set working directory and current user of node for installation.
 # I think databags are supposed to be used instead
-default['janus']['user']    = "vagrant"
-default['janus']['dir']     = "/home/#{node['janus']['user']}"
+set['janus']['user']    = "vagrant"
+set['janus']['dir']     = "/home/vagrant"
