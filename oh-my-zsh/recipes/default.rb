@@ -9,7 +9,7 @@
 include_recipe "git"
 include_recipe "zsh"
 
-user_id = 'vagrant'
+user_id = node['ohmyzsh']['user']
 
 git "/home/#{user_id}/.oh-my-zsh" do
   repository "https://github.com/robbyrussell/oh-my-zsh.git"
