@@ -6,6 +6,7 @@ Requirements
 
 Attributes
 ==========
+{ ohmyzsh: { user: ..., theme: ... }}
 
 Usage
 =====
