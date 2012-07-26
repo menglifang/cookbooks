@@ -1,0 +1,6 @@
+[submodule "git"]
+	path = git
+	url = https://github.com/opscode-cookbooks/git.git
+[submodule "zsh"]
+	path = zsh
+	url = https://github.com/opscode-cookbooks/zsh.git
