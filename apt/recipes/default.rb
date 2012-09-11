@@ -18,6 +18,6 @@
 # limitations under the License.
 #
 template "/etc/apt/sources.list" do
-  source "sources.list"
+  source "sources.list.erb"
   variables(:code_name => node['lsb']['codename'])
 end
