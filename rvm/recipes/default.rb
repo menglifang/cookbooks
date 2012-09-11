@@ -22,7 +22,12 @@ package 'curl'
 rvm_user = node['rvm']['user']
 rvm_dir = rvm_user == 'root' ? '/usr/local/rvm' : node['rvm']['dir']
 
-bash "install rvm" do
+# Install the required packages for Ruby
+node['rvm']['required_packages'].each do |pkg|
+  package pkg
+end
+
+bash "install rvm and ruby" do
   code <<-EOH
     curl -L https://get.rvm.io | #{rvm_user == 'root' ? "sudo" : ""} bash -s stable --ruby
   EOH
