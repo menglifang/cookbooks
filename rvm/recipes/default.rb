@@ -30,7 +30,6 @@ end
 bash "install rvm and ruby" do
   code <<-EOH
     curl -L https://get.rvm.io | #{rvm_user == 'root' ? "sudo" : ""} bash -s stable --ruby
-    source #{rvm_dir}/scripts/rvm
   EOH
   not_if {File.exists?("#{rvm_dir}/bin/rvm")}
 end
