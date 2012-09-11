@@ -1,6 +1,6 @@
-# CHANGELOG for nginx-with-passenger-module
+# CHANGELOG for nginx
 
-This file is used to list changes made in each version of nginx-with-passenger-module.
+This file is used to list changes made in each version of nginx
 
 ## 0.1.0:
 

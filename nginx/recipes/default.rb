@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: nginx-with-passenger-module
+# Cookbook Name:: nginx
 # Recipe:: default
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
