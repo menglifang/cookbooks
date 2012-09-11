@@ -10,3 +10,9 @@
 [submodule "mysql"]
 	path = mysql
 	url = https://github.com/opscode-cookbooks/mysql.git
+[submodule "openssl"]
+	path = openssl
+	url = https://github.com/opscode-cookbooks/openssl.git
+[submodule "database"]
+	path = database
+	url = https://github.com/opscode-cookbooks/database.git

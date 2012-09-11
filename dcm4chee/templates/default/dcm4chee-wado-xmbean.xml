@@ -1,0 +1,520 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mbean PUBLIC
+   "-//JBoss//DTD JBOSS XMBEAN 1.1//EN"
+   "http://www.jboss.org/j2ee/dtd/jboss_xmbean_1_1.dtd">
+<mbean>
+  <description><![CDATA[<b>WADO Service</b><br/>
+  Provides a Web Enabled DICOM Server to allow <b>W</b>eb <b>A</b>ccess for <b>D</b>ICOM persistent <b>O</b>bjects.<br/>
+  Supported mime-types are <tt>application/dicom</tt> and <tt>image/jpeg</tt>.<br>
+  Supported Optional request parameter: <i>rows, column, frameNumber, transferSyntax</i> and <i>contentType</i>.
+  <p>
+  <dl> 
+  <dt>particular features:</dt>
+  <dd>This implementation use relational query support.<br>
+  Therefore the request parameter <i>studyUID</i> and <i>seriesUID</i> may be empty. 
+  (it is NOT allowed to omit these parameters due to WADO specification)</dd>
+  <dd>Redirect: If this WADO service handles a request for an object that is external retrievable,
+  a client- or server side redirect can be initiated (see <tt>useClientRedirect</tt>).</dd>
+  </dl>
+  </p>]]>
+  </description>
+
+  <descriptors>
+    <persistence persistPolicy="OnUpdate" />
+    <persistence-manager
+      value="org.jboss.mx.persistence.DelegatingPersistenceManager" />
+  </descriptors>
+
+  <class>org.dcm4chex.wado.mbean.WADOService</class>
+
+  <constructor>
+    <description>The default constructor</description>
+    <name>WADOService</name>
+  </constructor>
+
+  <attribute access="read-write" getMethod="getCacheDataRootDir"
+    setMethod="setCacheDataRootDir">
+    <description><![CDATA[Root directory of JPEG file cache. 
+A relative path name is resolved relative to
+<i>&lt;archive-install-directory&gt;</i>/server/default/.<br/>
+<b>Attention:</b> You have to take care for moving existing JPEG files in the
+cache to the new location yourself!]]>
+    </description>
+    <name>CacheDataRootDirectory</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="wadocachedata" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getCacheNumberOfStudyBags"
+    setMethod="setCacheNumberOfStudyBags">
+    <description><![CDATA[Defines numbers of sub-directories to which study
+directories are distributed to reduce the number of sub-directories in the
+root directory. Examples:<br/>
+'1' - no distribution of study directores - the root directory
+contains as many sub-directories as different studies in the cache.<br/>
+'67'- study directories are distributed across 67 sub-directories of the root
+directory.<br/>
+'67*71' - study directories are distributed across 67*71 sub-directories,
+where the root directory contains 67 sub-directories, which each is itself
+splitted into 71 sub-directories.<br/>
+<b>Attention:</b> Can only be modified if the cache is empty!]]>
+    </description>
+    <name>CacheNumbersOfStudyBags</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="1" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getCacheJournalRootDir"
+    setMethod="setCacheJournalRootDir">
+    <description><![CDATA[Root directory for JPEG file cache journal files.
+A relative path name is resolved relative to
+<i>&lt;archive-install-directory&gt;</i>/server/default/.<br/>
+<b>Attention:</b> You have to take care for moving existing journal files to
+the new location yourself!]]>
+    </description>
+    <name>CachJournalRootDirectory</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="wadocachejournal" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getCacheJournalFilePathFormat"
+    setMethod="setCacheJournalFilePathFormat">
+    <description><![CDATA[Defines Journal File path, with 'yyyy' will be
+replaced by the current year, 'MM' by the current month, 'dd' by the current
+date, 'HH' by the current hour and 'mm' by the current minute.<br/>
+<b>Attention:</b> Can only be modified if the cache is empty!]]>
+    </description>
+    <name>CacheJournalFilePathFormat</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="yyyy/MM/dd/HH/mm" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="isDisableCache"
+    setMethod="setDisableCache">
+    <description>Disable/enable File caching of generated images. </description>
+    <name>DisableCache</name>
+    <type>boolean</type>
+    <descriptors>
+      <value value="false" />
+    </descriptors>
+  </attribute>
+  <attribute access="read-write" 
+    getMethod="isEnableClearCacheForReceivedSeries"
+    setMethod="setEnableClearCacheForReceivedSeries">
+    <description>Disable/enable removing cache entries when a series is received. 
+    	This is only required when modified objects are resent with the same SOP Instance UID (NOT DICOM conform!).
+    </description>
+    <name>EnableClearCacheForReceivedSeries</name>
+    <type>boolean</type>
+    <descriptors>
+      <value value="false" />
+    </descriptors>
+  </attribute>
+
+
+  <attribute access="read-write" getMethod="getDeleterThresholds"
+    setMethod="setDeleterThresholds">
+    <description><![CDATA[Defines thresholds dependent on hour of day, for deleting the most
+        infrequently accessed images. Format: HOUR:##MB or HOUR:##GB,
+        multiple thresholds with different (start) hour separated by ';'.]]>
+    </description>
+    <name>DeleterThresholds</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="7:10MB;19:100MB" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getFreeDiskSpaceInterval"
+    setMethod="setFreeDiskSpaceInterval">
+    <description>Interval in which the available disk space is
+      checked and, if necessary, the cache is cleaned. Format: ##m (in
+      minutes), ##h (in hours), ##d (in days). NEVER (= disable cache
+      deletion). </description>
+    <name>FreeDiskSpaceInterval</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="10m" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-only" getMethod="getImageSopCuids">
+    <description><![CDATA[
+        List of image SOP Classes that this WADO service can handled as image. 
+        (List is defined as AcceptedImageSOPClasses in StoreScp Service]]>
+    </description>
+    <name>ImageSOPClasses</name>
+    <type>java.lang.String</type>
+    <descriptors>
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getImageQuality"
+    setMethod="setImageQuality">
+    <description>The quality of JPEG images to be returned within the
+      range 1 to 100, 100 being the best quality. </description>
+    <name>ImageQuality</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="75" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getImageWriterClass"
+    setMethod="setImageWriterClass">
+    <description><![CDATA[Class name of used JPEG Encoder, either implementing
+      <code>javax.imageio.ImageWriter</code> (e.g.:
+      <code>com.sun.imageio.plugins.jpeg.JPEGImageWriter</code>,
+      <code>com.sun.media.imageioimpl.plugins.jpeg.CLibJPEGImageWriter</code>) or
+      - if provided by the JRE -
+      <code>com.sun.image.codec.jpeg.JPEGImageEncoder</code>.]]>
+    </description>
+    <name>ImageWriterClass</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value
+        value="com.sun.image.codec.jpeg.JPEGImageEncoder" />
+    </descriptors>
+  </attribute>
+  
+  <attribute access="read-write" getMethod="isJpgWriterSupportsByteColormap"
+    setMethod="setJpgWriterSupportsByteColormap">
+    <description><![CDATA[JPEG Writer supports 8 bit images with indexed colors.<br />
+    	If <code>false</code>: Force 8-bit RGB conversion to handle windowing, 
+    	PALETTE COLOR images,.. directly in WADO Service.]]>
+    </description>
+    <name>JpgWriterSupportsByteColormap</name>
+    <type>boolean</type>
+    <descriptors>
+      <value value="true" />
+    </descriptors>
+  </attribute>
+  <attribute access="read-write" getMethod="isJpgWriterSupportsShortColormap"
+    setMethod="setJpgWriterSupportsShortColormap">
+    <description><![CDATA[JPEG Writer supports >8 bit images with indexed colors.<br />
+    	If <code>false</code>: Force 8-bit RGB conversion for > 8bit/pixel images to handle windowing, 
+    	PALETTE COLOR images,.. directly in WADO Service.]]>
+    </description>
+    <name>JpgWriterSupportsShortColormap</name>
+    <type>boolean</type>
+    <descriptors>
+      <value value="false" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="isClientRedirect"
+    setMethod="setClientRedirect">
+    <description>Enables client side redirection if requested
+      DICOM object is no locally available. If client side redirect is
+      disabled, the server side redirect is enabled! </description>
+    <name>useClientRedirect</name>
+    <type>boolean</type>
+    <descriptors>
+      <value value="false" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="isRedirectCaching"
+    setMethod="setRedirectCaching">
+    <description>Enables caching for server side redirect! has no
+      effect if client side redirect is enabled! </description>
+    <name>useRedirectCaching</name>
+    <type>boolean</type>
+    <descriptors>
+      <value value="true" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="isUseTransferSyntaxOfFileAsDefault"
+    setMethod="setUseTransferSyntaxOfFileAsDefault">
+    <description>Set the handling of missing transfersyntax parameter
+      if content type is application/dicom. If enabled, the default
+      transfer syntax is chosen from the file.(NOT WADO conform!) If
+      disabled, the default transfer syntax is explicit VR little endian
+      (as defined in part 18). </description>
+    <name>UseTransferSyntaxOfFileAsDefault</name>
+    <type>boolean</type>
+    <descriptors>
+      <value value="true" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getSrImageRows"
+    setMethod="setSrImageRows">
+    <description>Set fixed size of referenced images in rendered
+      Structured Reports (by rows). NONE means original image size. 
+    </description>
+    <name>SRfixedImageRows</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="NONE" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getHtmlXslURL"
+    setMethod="setHtmlXslURL">
+    <description><![CDATA[Filepath or URL to XSLT stylesheet to render DICOM SR to HTML<br/>
+      A relative path name (filepath or File URL) is resolved relative to <i>&lt;archive-install-directory&gt;</i>/server/default/
+      (Use NONE to disable this transformation). ]]></description>
+    <name>HtmlXslURL</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="conf/dcm4chee-wado/sr_html.xsl" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getXHtmlXslURL"
+    setMethod="setXHtmlXslURL">
+    <description><![CDATA[Filepath or URL to XSLT stylesheet to render DICOM SR to XHTML<br/>
+      A relative path name (filepath or File URL) is resolved relative to <i>&lt;archive-install-directory&gt;</i>/server/default/
+      (Use NONE to disable this transformation). ]]></description>
+    <name>XHtmlXslURL</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="conf/dcm4chee-wado/sr_html.xsl" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getXmlXslURL"
+    setMethod="setXmlXslURL">
+    <description><![CDATA[Filepath or URL to XSLT stylesheet to render DICOM SR to XML<br/>
+      A relative path name (filepath or File URL) is resolved relative to <i>&lt;archive-install-directory&gt;</i>/server/default/
+      (Use NONE to disable this transformation). ]]></description>
+    <name>XmlXslURL</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="conf/dcm4chee-wado/sr_xml_style.xsl" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getDicomXslURL"
+    setMethod="setDicomXslURL">
+    <description><![CDATA[Filepath or URL to XSLT stylesheet to render attributes of DICOM object as HTML<br/>
+      A relative path name (filepath or File URL) is resolved relative to <i>&lt;archive-install-directory&gt;</i>/server/default/
+      (Use NONE to disable this transformation). ]]></description>
+    <name>DicomXslURL</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="conf/dcm4chee-wado/dicom_html.xsl" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getContentTypeDicomXML"
+    setMethod="setContentTypeDicomXML">
+    <description>Response Content type (mime type) of request
+      with application/dicom+xml. Use NONE to disable
+      application/dicom+xml requests. </description>
+    <name>ContentTypeDicomXML</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="text/html" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getTextSopCuids"
+    setMethod="setTextSopCuids">
+    <description>List of SOP Class UIDs that are used to find Text
+      (SR) documents (separated with semicolon or newline). Use either
+      the SOP Class UID or the symbolic name! Use an empty value to
+      reset this list. </description>
+    <name>TextSopCuids</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getVideoSopCuids"
+    setMethod="setVideoSopCuids">
+    <description>List of Video SOP Class UIDs for mpeg2 support
+      (separated with semicolon or newline). Use either the SOP Class
+      UID or the symbolic name! Use NONE to disable mpeg2 support. 
+    </description>
+    <name>VideoSopCuids</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value
+        value="VideoEndoscopicImageStorage;VideoMicroscopicImageStorage;VideoPhotographicImageStorage" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getEncapsulatedSopCuids"
+    setMethod="setEncapsulatedSopCuids">
+    <description>List of SOP Class UIDs where content is
+      encapsulated like EncapsulatedPDFStorage. (separated with
+      semicolon or newline). Use either the SOP Class UID or the
+      symbolic name! Use NONE to disable encapsulated DICOM support. 
+    </description>
+    <name>EncapsulatedSopCuids</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="EncapsulatedPDFStorage;Dcm4cheEncapsulatedDocumentStorage" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getDisabledAuditLogHosts"
+    setMethod="setDisabledAuditLogHosts">
+    <description><![CDATA[List of host names where audit log is disabled. Use NONE
+      or ALL to enable/disable audit log for all WADO requests.<br />
+      <b>Note:</b>Using host name(s) will force DNS lookup! 
+    ]]></description>
+    <name>DisabledAuditLogHosts</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="NONE" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="isDisableDNS"
+    setMethod="setDisableDNS">
+    <description>Disable/enable Hostname Lookup (DNS) for
+      Audit Log. </description>
+    <name>DisableHostLookup</name>
+    <type>boolean</type>
+    <descriptors>
+      <value value="false" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="isRenderOverlays"
+    setMethod="setRenderOverlays">
+    <description>Disable/enable rendering of overlays when generating JPEGS. </description>
+    <name>RenderOverlays</name>
+    <type>boolean</type>
+    <descriptors>
+      <value value="false" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getFetchDestAET"
+    setMethod="setFetchDestAET">
+    <description>Destination AET for fetching objects if they are not locally available and the external retrieve AET has no WADO support.
+    (You have to define this in AE management by setting WADOUrl 'DICOM_QR_ONLY'!)
+    </description>
+    <name>FetchDestinationAET</name>
+    <type>java.lang.String</type>
+    <descriptors>
+      <value value="DCM4CHEE" />
+    </descriptors>
+  </attribute>
+  <attribute access="read-write" getMethod="isUseSeriesLevelFetch"
+    setMethod="setUseSeriesLevelFetch">
+    <description><![CDATA[Use SERIES level fetch? <br/>
+       true : Use a SERIES level C-MOVE request. (May fetch instances that are already online!)<br/>
+       false: Use a C-MOVE on INSTANCE level with all instances of the series that are not online
+       and retrievable from the external retrieve AET. ]]>
+    </description>
+    <name>UseSeriesLevelFetch</name>
+    <type>boolean</type>
+    <descriptors>
+      <value value="false" />
+    </descriptors>
+  </attribute>
+  <attribute access="read-write" getMethod="getFetchTimeout"
+    setMethod="setFetchTimeout">
+    <description>Fetch timeout in ms. A requested object will be fetched if it is not locally available and the external retrieve AET doesn't support WADO.
+    (You have to define this in AE management by setting WADOUrl to 'DICOM_QR_ONLY'!)
+    In this case the object will be fetched via a C-MOVE request and the WADO request waits until the object is received.
+    If the object get not received within this timeout, the WADO request will fail.  
+    </description>
+    <name>FetchTimeout</name>
+    <type>long</type>
+    <descriptors>
+      <value value="10000" />
+    </descriptors>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getTimerID"
+    setMethod="setTimerID">
+    <description>Used internally. Do NOT modify. </description>
+    <name>TimerID</name>
+    <type>java.lang.String</type>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getQueryRetrieveScpName"
+    setMethod="setQueryRetrieveScpName">
+    <description>Used internally. Do NOT modify.</description>
+    <name>QueryRetrieveScpName</name>
+    <type>javax.management.ObjectName</type>
+  </attribute>
+  <attribute access="read-write" getMethod="getMoveScuServiceName"
+    setMethod="setMoveScuServiceName">
+    <description>Used internally. Do NOT modify.</description>
+    <name>MoveScuServiceName</name>
+    <type>javax.management.ObjectName</type>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getStoreScpServiceName"
+    setMethod="setStoreScpServiceName">
+    <description>Used internally. Do NOT modify. </description>
+    <name>StoreScpServiceName</name>
+    <type>javax.management.ObjectName</type>
+  </attribute>
+
+  <attribute access="read-write" getMethod="getSchedulerServiceName"
+    setMethod="setSchedulerServiceName">
+    <description>Used internally. Do NOT modify. </description>
+    <name>SchedulerServiceName</name>
+    <type>javax.management.ObjectName</type>
+  </attribute>
+  
+  &defaultAttributes;
+
+   <!-- Operations -->
+   &defaultOperations;
+
+   <operation impact="INFO">
+      <description>Show free disk space</description>
+      <name>showFreeSpace</name>
+      <return-type>java.lang.String</return-type>
+   </operation>
+
+   <operation impact="INFO">
+      <description><![CDATA[Show current effective deleter threshold according
+configured <i>DeleterThreshold</i>.]]>
+      </description>
+      <name>showMinFreeSpace</name>
+      <return-type>java.lang.String</return-type>
+   </operation>
+   
+   <operation impact="ACTION">
+      <description>Clear Cache</description>
+      <name>clearCache</name>
+      <return-type>java.lang.String</return-type>
+   </operation>
+   
+   <operation impact="ACTION">
+      <description>Free Disk Space.
+      Delete old files from cache to free disk space.
+      </description>
+      <name>freeDiskSpace</name>
+      <return-type>java.lang.String</return-type>
+   </operation>
+   
+   <operation impact="ACTION">
+      <description>Get WADO response object</description>
+      <name>getWADOObject</name>
+      <parameter>
+        <description>Value object of the request.</description>
+        <name>reqVO</name>
+        <type>org.dcm4chex.wado.common.WADORequestObject</type>
+      </parameter>
+      <return-type>org.dcm4chex.wado.common.WADOResponseObject</return-type>
+   </operation>
+  
+   <operation impact="ACTION">
+      <description>Clear Template Cache</description>
+      <name>clearTemplateCache</name>
+      <return-type>void</return-type>
+   </operation>
+
+   
+</mbean>
