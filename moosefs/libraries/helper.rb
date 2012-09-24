@@ -22,9 +22,6 @@ module Moosefs
   end
 
   def install
-    master_or_metalogger = master? || metalogger?
-    chunk = chunk?
-
     bash "install_moosefs" do
       user "root"
       cwd Chef::Config[:file_cache_path]
@@ -37,8 +34,8 @@ module Moosefs
         (cd mfs-#{node[:moosefs][:version]}/ && ./configure --prefix=/usr    \
         --sysconfdir=/etc --localstatedir=/var/lib --with-default-user=mfs   \
         --with-default-group=mfs                                             \
-        #{"--disable-mfschunkserver --disable-mfsmount" if master || metalogger} \
-        #{"--disable-mfsmaster" if chunk} && make && make install)
+        #{"--disable-mfschunkserver --disable-mfsmount" if node[:moosefs][:role] =~ /^(master|metalogger)$/} \
+        #{"--disable-mfsmaster" if node[:moosefs][:role] == 'chunk'} && make && make install)
       EOH
       action :nothing
       notifies :run, "bash[config_moosefs_#{node[:moosefs][:role]}]", :immediately
