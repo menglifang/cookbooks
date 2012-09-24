@@ -15,4 +15,5 @@
 # limitations under the License.
 
 default['moosefs']['version'] = '1.6.26'
+default['moosefs']['role'] = 'master'
 
