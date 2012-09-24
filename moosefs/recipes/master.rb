@@ -21,7 +21,7 @@ if platform? 'ubuntu'
   package 'build-essential'
   package 'zlib1g-dev'
 
-  remote_file "#{Chef::Config[:file_cache_path]}/moosefs-#{node[:moosefs][:version]}.gz" do
+  remote_file "#{Chef::Config[:file_cache_path]}/mfs-#{node[:moosefs][:version]}.gz" do
     source "http://dev.menglifang.org/repos/src/moosefs/mfs-#{node[:moosefs][:version]}.gz"
     notifies :run, "bash[install_moosefs]", :immediately
   end
@@ -32,8 +32,8 @@ if platform? 'ubuntu'
     code <<-EOH
       groupadd mfs
       useradd -g mfs mfs
-      tar -zxf moosefs-#{node[:moosefs][:version]}.gz
-      (cd moosefs-#{node[:moosefs][:version]}/ && ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var/lib --with-default-user=mfs --with-default-group=mfs --disable-mfschunkserver --disable-mfsmount && make && make install)
+      tar -zxf mfs-#{node[:moosefs][:version]}.gz
+      (cd mfs-#{node[:moosefs][:version]}/ && ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var/lib --with-default-user=mfs --with-default-group=mfs --disable-mfschunkserver --disable-mfsmount && make && make install)
 
       cd /etc
       cp mfsmaster.cfg.dist mfsmaster.cfg
