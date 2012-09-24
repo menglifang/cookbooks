@@ -80,18 +80,6 @@ module Moosefs
       action :nothing
     end
   end
-
-  def master?
-    node['moosefs']['role'] == 'master'
-  end
-
-  def metalogger?
-    node['moosefs']['role'] == 'metalogger'
-  end
-
-  def chunk?
-    node['moosefs']['role'] == 'chunk'
-  end
 end
 
 Chef::Recipe.send(:include, Moosefs)
