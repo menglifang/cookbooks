@@ -27,5 +27,6 @@ bash "install rvm" do
     curl -L https://get.rvm.io | #{rvm_user == 'root' ? "sudo" : ""} bash -s stable
     source "#{rvm_dir}/scripts/rvm"
   EOH
+  user node['rvm']['user']
   not_if {File.exists?("#{rvm_dir}/bin/rvm")}
 end
