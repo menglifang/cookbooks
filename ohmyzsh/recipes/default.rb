@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: oh-my-zsh
+# Cookbook Name:: ohmyzsh
 # Recipe:: default
 #
 # Copyright 2012, Beijing Menglifang Network Science and Technology Co.,Ltd.
