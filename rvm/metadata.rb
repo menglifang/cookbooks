@@ -5,7 +5,7 @@ description      "Installs/Configures rvm"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          "0.1.0"
 
-recipe "rvm", "Install RVM and Ruby"
+recipe "rvm", "Install RVM"
 
 depends "git"
 
