@@ -30,4 +30,5 @@ bash 'install ruby' do
   code <<-EOH
     rvm install #{node['ruby']['version']}
   EOH
+  user node.current_user
 end
