@@ -1,2 +1,2 @@
-default[:ohmyzsh][:user] = "vagrant"
+default[:ohmyzsh][:user] = "#{node.current_user}"
 default[:ohmyzsh][:theme] = "afowler"
