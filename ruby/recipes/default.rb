@@ -28,8 +28,8 @@ end
 
 bash 'install ruby' do
   code <<-EOH
-    source #{node.current_user == 'root' ? '/usr/local/rvm' : "/home/#{node.current_user}/.rvm"}/scripts/rvm
+    source #{node['current_user'] == 'root' ? '/usr/local/rvm' : "/home/#{node['current_user']}/.rvm"}/scripts/rvm
     rvm install #{node['ruby']['version']}
   EOH
-  user node.current_user
+  user node['current_user']
 end
