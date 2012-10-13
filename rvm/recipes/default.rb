@@ -19,7 +19,7 @@ include_recipe 'git'
 
 package 'curl'
 
-rvm_user = node['current_user']
+rvm_user = node['rvm']['global'] ? 'root' : node['rvm']['user']
 rvm_dir = rvm_user == 'root' ? '/root' : node['rvm']['dir']
 
 bash "install rvm" do
@@ -27,6 +27,6 @@ bash "install rvm" do
     curl -L https://get.rvm.io | #{rvm_user == 'root' ? "sudo" : ""} bash -s stable
     source "#{rvm_dir}/scripts/rvm"
   EOH
-  user node['current_user']
+  user rvm_user
   not_if {File.exists?("#{rvm_dir}/bin/rvm")}
 end

@@ -2,5 +2,3 @@ default['ruby']['mri']['required_packages'] = %w{ build-essential openssl librea
 
 default['ruby']['interpreter'] = 'mri'
 default['ruby']['version'] = '1.9.3'
-
-default['current_user'] = node.current_user
