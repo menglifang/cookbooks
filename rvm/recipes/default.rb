@@ -20,7 +20,7 @@ include_recipe 'git'
 package 'curl'
 
 rvm_user = node['rvm']['global'] ? 'root' : node['rvm']['user']
-rvm_dir = rvm_user == 'root' ? '/root' : node['rvm']['dir']
+rvm_dir = rvm_user == 'root' ? '/user/local/rvm' : node['rvm']['dir']
 
 bash "install rvm" do
   code <<-EOH
