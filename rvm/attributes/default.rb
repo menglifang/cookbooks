@@ -1,2 +1,2 @@
-set['rvm']['user']    = node.current_user
-set['rvm']['dir']     = "/home/#{node.current_user}/.rvm"
+default['current_user']    = node.current_user
+default['rvm']['dir']     = "/home/#{default['current_user']}/.rvm"
