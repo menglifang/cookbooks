@@ -1,8 +1,10 @@
 Description
 ===========
+Chef recipe to install and configure the dcm4chee DICOM archive (http://www.dcm4che.org/confluence/display/ee2/Home)
 
 Requirements
 ============
+Java JDK, MySql
 
 Attributes
 ==========
