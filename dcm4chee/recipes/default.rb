@@ -84,6 +84,9 @@ end
 
 template  "/etc/init.d/dcm4chee" do
   source 'dcm4chee.erb'
+  owner 'root'
+  group 'root'
+  mode 0755
   variables(
     'dcm4chee_home' =>  node['dcm4chee']['home'],
     'java_home' => node['java']['java_home']
