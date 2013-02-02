@@ -66,7 +66,7 @@ if node['dcm4chee']['database'] == 'mysql'
   end
 
   bash 'import the schema' do
-    code "mysql -upacs -ppacs pacsdb < #{node['dcm4chee']['home']}/mysql/create.mysql"
+    code "mysql -upacs -ppacs pacsdb < #{node['dcm4chee']['home']}/sql/create.mysql"
   end
 end
 
