@@ -57,12 +57,20 @@ if node['dcm4chee']['database'] == 'mysql'
     database_name "pacsdb"
     action [:create]
   end
-
-
-  mysql_database "grant permissions for pacs" do
+  
+  # create user pacs
+  mysql_database_user 'pacs' do
     connection ({:host => "localhost", :username => 'root', :password => node['mysql']['server_root_password']})
-    action :query
-    sql "grant all on pacsdb.* to 'pacs'@'localhost' identified by 'pacs'"
+    password 'pacs'
+    action :create
+  end
+
+  # grant all privileges for user pacs on all tables in pacsdb
+  mysql_database_user 'pacs' do
+    connection ({:host => "localhost", :username => 'root', :password => node['mysql']['server_root_password']})
+    database_name 'pacsdb'
+    privileges [:all]
+    action :grant
   end
 
   bash 'import the schema' do
