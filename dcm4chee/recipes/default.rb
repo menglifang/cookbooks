@@ -15,13 +15,6 @@
 
 include_recipe "java"
 
-if node['dcm4chee']['version'].start_with? '2.17'
-  node['dcm4chee']['jboss']['home'] = '/opt/jboss-4.2.3.GA'
-  node['dcm4chee']['jboss']['archive'] = 'jboss-4.2.3.GA.zip'
-  node['dcm4chee']['jboss']['version'] = '4.2.3.GA'
-  node['dcm4chee']['jboss']['url'] = 'http://superb-sea2.dl.sourceforge.net/project/jboss/JBoss/JBoss-4.2.3.GA/jboss-4.2.3.GA.zip'
-end
-
 package 'unzip'
 
 bash "install jboss" do
@@ -50,6 +43,7 @@ bash 'install dcm4chee' do
 end
 
 if node['dcm4chee']['database'] == 'mysql'
+  include_recipe "mysql::ruby"
   include_recipe "mysql::server"
 
   mysql_database "create the database" do
