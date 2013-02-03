@@ -25,6 +25,7 @@ default['dcm4chee']['jboss']['archive'] = 'jboss-4.2.3.GA.zip'
 default['dcm4chee']['jboss']['version'] = '4.2.3.GA'
 default['dcm4chee']['jboss']['url'] = 'http://superb-sea2.dl.sourceforge.net/project/jboss/JBoss/JBoss-4.2.3.GA/jboss-4.2.3.GA.zip'
 
+default['mysql']['bind_address'] = '127.0.0.1'
 default['mysql']['server_root_password'] = '123456'
 default['mysql']['server_repl_password'] = '123456'
 default['mysql']['server_debian_password'] = '123456'
