@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-default['dcm4chee']['home'] = '/opt/dcm4chee-2.17.2-mysql'
-default['dcm4chee']['archive'] = 'dcm4chee-2.17.2-mysql.zip'
-default['dcm4chee']['version'] = '2.17.2'
+default['dcm4chee']['home'] = '/opt/dcm4chee-2.17.3-mysql'
+default['dcm4chee']['archive'] = 'dcm4chee-2.17.3-mysql.zip'
+default['dcm4chee']['version'] = '2.17.3'
 default['dcm4chee']['database'] = 'mysql'
-default['dcm4chee']['url'] = 'http://cdnetworks-kr-2.dl.sourceforge.net/project/dcm4che/dcm4chee/2.17.2/dcm4chee-2.17.2-mysql.zip'
+default['dcm4chee']['url'] = 'http://superb-sea2.dl.sourceforge.net/project/dcm4che/dcm4chee/2.17.3/dcm4chee-2.17.3-mysql.zip'
 
 default['dcm4chee']['jboss']['home'] = '/opt/jboss-4.2.3.GA'
 default['dcm4chee']['jboss']['archive'] = 'jboss-4.2.3.GA.zip'
