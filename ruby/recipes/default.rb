@@ -30,6 +30,8 @@ bash 'install ruby' do
   code <<-EOH
     source #{node['rvm']['global'] ? '/usr/local/rvm' : "/home/#{node.current_user}/.rvm"}/scripts/rvm
     rvm install #{node['ruby']['version']}
+    rvm --default use #{node['ruby']['version']}
   EOH
   user node['rvm']['global'] ? 'root' : node.current_user
+  not_if "ruby -v |g rep #{node['ruby']['version']}"
 end
