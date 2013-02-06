@@ -15,16 +15,23 @@
 # limitations under the License.
 #
 
+include_recipe 'apt'
 include_recipe 'git'
 
 package 'curl'
 
-rvm_user = node['rvm']['global'] ? 'root' : node['rvm']['user']
-rvm_dir = rvm_user == 'root' ? '/usr/local/rvm' : node['rvm']['dir']
+rvm_global = node['rvm']['global']
+rvm_user = rvm_global ? 'root' : node['rvm']['user']
+rvm_dir = rvm_global ? '/usr/local/rvm' : node['rvm']['dir']
+rvmrc = rvm_global ? '/etc/rvmrc' : "/home/#{rvm_user}"
+
+template rvmrc do
+  source 'rvmrc'
+end
 
 bash "install rvm" do
   code <<-EOH
-    curl -L https://get.rvm.io | #{rvm_user == 'root' ? "sudo" : ""} bash -s stable
+    curl -L https://get.rvm.io | #{rvm_global ? "sudo" : ""} bash -s stable
     source "#{rvm_dir}/scripts/rvm"
   EOH
   user rvm_user
