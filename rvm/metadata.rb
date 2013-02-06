@@ -7,6 +7,7 @@ version          "0.1.0"
 
 recipe "rvm", "Install RVM"
 
+depends "apt"
 depends "git"
 
 %w{ debian ubuntu }.each do |os|
